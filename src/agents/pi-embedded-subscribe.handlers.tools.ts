@@ -241,14 +241,23 @@ export function handleToolExecutionUpdate(
       partialResult: sanitized,
     },
   });
-  void ctx.params.onAgentEvent?.({
-    stream: "tool",
-    data: {
-      phase: "update",
-      name: toolName,
-      toolCallId,
-    },
-  });
+  const onAgentEvent = ctx.params.onAgentEvent;
+  if (onAgentEvent) {
+    void Promise.resolve()
+      .then(() =>
+        onAgentEvent({
+          stream: "tool",
+          data: {
+            phase: "update",
+            name: toolName,
+            toolCallId,
+          },
+        }),
+      )
+      .catch((err: unknown) => {
+        ctx.log.debug(`tool_execution_update handler failed: ${String(err)}`);
+      });
+  }
 }
 
 export async function handleToolExecutionEnd(
@@ -355,16 +364,25 @@ export async function handleToolExecutionEnd(
       result: sanitizedResult,
     },
   });
-  void ctx.params.onAgentEvent?.({
-    stream: "tool",
-    data: {
-      phase: "result",
-      name: toolName,
-      toolCallId,
-      meta,
-      isError: isToolError,
-    },
-  });
+  const onAgentEvent = ctx.params.onAgentEvent;
+  if (onAgentEvent) {
+    void Promise.resolve()
+      .then(() =>
+        onAgentEvent({
+          stream: "tool",
+          data: {
+            phase: "result",
+            name: toolName,
+            toolCallId,
+            meta,
+            isError: isToolError,
+          },
+        }),
+      )
+      .catch((err: unknown) => {
+        ctx.log.debug(`tool_execution_result handler failed: ${String(err)}`);
+      });
+  }
 
   ctx.log.debug(
     `embedded run tool end: runId=${ctx.params.runId} tool=${toolName} toolCallId=${toolCallId}`,

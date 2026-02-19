@@ -61,7 +61,7 @@ export function extractToolCallsFromAssistant(
     if (typeof rec.type === "string" && TOOL_CALL_TYPES.has(rec.type)) {
       toolCalls.push({
         id: rec.id,
-        name: typeof rec.name === "string" ? rec.name : undefined,
+        name: typeof rec.name === "string" ? rec.name.trim().toLowerCase() : undefined,
       });
     }
   }
